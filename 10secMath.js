@@ -7,6 +7,9 @@ $(document).ready(function(){
   var score = 0;
   var highScore = 0;
   var number;
+  var question = {};  
+  var num1;
+  var num2;
   
   var updateTimeLeft = function (amount) {
     timeLeft += amount;
@@ -52,29 +55,30 @@ $(document).ready(function(){
   }
   
   //Need to grab number value 
-  number = $("#myRange").val();
+  number = $("#myRange").val();	
 
   $(document).on('input', '#myRange', function() {
     number = $(this).val();  
-  })
+  })  
  
   var randomNumberGenerator = function (size) {
     return Math.ceil(Math.random() * size);
   };
-  
-  var questionGenerator = function () {
-    var question = {};
-    var num1 = randomNumberGenerator(number);
-    var num2 = randomNumberGenerator(number);
-        
-    if($("#Add").prop('checked')){
-        question.answer = num1 + num2;
-        question.equation = String(num1) + " + " + String(num2);
-    }
+
+  var addition = function (){
+    num1 = randomNumberGenerator(number);
+    num2 = randomNumberGenerator(number);
     
-    if($("#Subtract").prop('checked')){
-        
-        for(var i=0; i<=10; i++){            
+    question.answer = num1 + num2;
+    question.equation = String(num1) + " + " + String(num2);
+    return question;
+  };
+  
+  var subtraction = function (){
+    num1 = randomNumberGenerator(number);
+    num2 = randomNumberGenerator(number);
+    
+    for(var i=0; i<=10; i++){            
             if(num1>=num2){                
                 break;
             }
@@ -84,17 +88,25 @@ $(document).ready(function(){
             }
         }        
         
-        question.answer = num1 - num2;
-        question.equation = String(num1) + " - " + String(num2);
-    }
+    question.answer = num1 - num2;
+    question.equation = String(num1) + " - " + String(num2);    
+    return question;
+  };
+  
+  var multiplication = function (){
+    num1 = randomNumberGenerator(number);
+    num2 = randomNumberGenerator(number);
     
-    if($("#Multiply").prop('checked')){
-        question.answer = num1 * num2;
-        question.equation = String(num1) + " * " + String(num2);
-    }
+    question.answer = num1 * num2;
+    question.equation = String(num1) + " * " + String(num2);   
+    return question;
+  }; 
+  
+  var division = function (){
+    num1 = randomNumberGenerator(number);
+    num2 = randomNumberGenerator(number);
     
-    if($("#Divide").prop('checked')){
-        for(i=2; i<=10; i++){
+    for(i=2; i<=10; i++){
             dividend=num1%i;
             if(dividend===0){
                 num2=i;
@@ -106,15 +118,49 @@ $(document).ready(function(){
             }
         }
         
-        question.answer = num1 / num2;
-        question.equation = String(num1) + " / " + String(num2);
-    }      
-        
+    question.answer = num1 / num2;
+    question.equation = String(num1) + " / " + String(num2);   
     return question;
-  };
+  };     
   
-  var renderNewQuestion = function () {      
-    currentQuestion = questionGenerator();
+  var renderNewQuestion = function () {  
+    var randomQuestion = [];
+    var randomNumber;
+    
+    if($("#Add").prop('checked')){
+        randomQuestion.push('add');
+    }
+    
+    if($("#Subtract").prop('checked')){
+        randomQuestion.push('minus');
+    }
+    
+    if($("#Multiply").prop('checked')){
+        randomQuestion.push('multiply');
+    }
+    
+    if($("#Divide").prop('checked')){
+        randomQuestion.push('divide');
+    }
+    
+    randomNumber = randomNumberGenerator(randomQuestion.length);
+    
+    //default question
+    currentQuestion = addition();
+    
+    if(randomQuestion[randomNumber-1]==='add'){
+        currentQuestion = addition();
+    }
+    else if(randomQuestion[randomNumber-1]==='minus'){
+        currentQuestion = subtraction();
+    }
+    else if(randomQuestion[randomNumber-1]==='multiply'){
+        currentQuestion = multiplication();
+    }
+    else{
+        currentQuestion = division();
+    }
+    
     $('#equation').text(currentQuestion.equation);      
   };
   
